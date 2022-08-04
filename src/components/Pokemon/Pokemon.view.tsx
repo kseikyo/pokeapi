@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch, Fragment, SetStateAction } from "react";
+import { Dispatch, Fragment, SetStateAction, useRef } from "react";
 import cn from "classnames";
 import { Pokemon } from "src/types/pokemon";
 
@@ -6,25 +6,23 @@ type PokemonView = {
   Pokemon?: Pokemon;
   loading?: boolean;
   errorMessage?: string | null;
-  search: string;
   setSearchValue: Dispatch<SetStateAction<string>>;
   setPokemonId: Dispatch<SetStateAction<number>>;
-  handleChange: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
 export function PokemonView({
   Pokemon,
   loading,
   errorMessage,
-  search,
   setPokemonId,
-  handleChange,
   setSearchValue,
 }: PokemonView) {
+  const inputRef = useRef("");
   const handleSumit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setPokemonId(0);
-    setSearchValue(search);
+    // @ts-ignore
+    setSearchValue(inputRef.current?.value);
   };
   return (
     <div className="flex w-full text-xl justify-center flex-col gap-8">
@@ -45,8 +43,10 @@ export function PokemonView({
             )}
             type="text"
             placeholder="Search a pokemon by name or ID"
-            value={search}
-            onChange={handleChange}
+            // @ts-ignore
+            ref={inputRef}
+            // value={search}
+            // onChange={handleChange}
           />
           <button
             type="submit"
@@ -105,7 +105,9 @@ export function PokemonView({
                   <span className="capitalize" role="display-pokemon-name">
                     Name: {Pokemon.name}
                   </span>
-                  <span className="block" role="display-pokemon-id">ID: {Pokemon.id}</span>
+                  <span className="block" role="display-pokemon-id">
+                    ID: {Pokemon.id}
+                  </span>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={Pokemon.sprites.front_default}
